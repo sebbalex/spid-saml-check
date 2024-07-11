@@ -1,6 +1,7 @@
 const fs = require("fs-extra");
 const path = require('path');
 const util = require('util');
+const axios = require('axios');
 const Utility = require("../lib/utils");
 const moment = require("moment");
 const IdP = require("../lib/saml-utils").IdP;
@@ -15,16 +16,17 @@ const config_demo = require("../../config/idp_demo.json");
 const config_idp = require("../../config/idp.json");
 const config_dir = require("../../config/dir.json");
 const config_test = require("../../config/test.json");
-const spid_users = require("../../config/spid_users.json");
+const config_spid_users = require("../../config/spid_users.json");
 
 //const demo_basepath = config_demo.basepath=='/'? '':config_demo.basepath;
 //const validator_basepath = config_idp.basepath=='/'? '':config_idp.basepath;
+const spid_users_url = process.env.SPID_USERS_URL;
 
 const demo_basepath = config_demo.basepath;
 const validator_basepath = config_idp.basepath;
 
-module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutResponse, database) {
-
+module.exports = async function(app, checkAuthorisation, getEntityDir, sendLogoutResponse, database) {
+    const spid_users = spid_users_url ? await getUsersFromURL(spid_users_url) : config_spid_users;
     // get validator demo metadata
     app.get(demo_basepath + "/metadata.xml", function (req, res) {
         let config = config_demo;
@@ -764,6 +766,18 @@ module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutRespo
         let logoutURL = idp.getLogoutResponseURL(url, SAMLResponse, sigAlg, signature, relayState);
         res.redirect(logoutURL);
 
+    }
+
+    async function getUsersFromURL(url) {
+      return axios.get(url, {timeout: 900000})
+      .then(function(response) {
+        Utility.log("getUsersFromURL Success", response.data);
+        return response.data;
+      })
+      .catch(function(error) {
+        Utility.log("getUsersFromURL Error", error);
+        return null;
+      });
     }
 
 }
