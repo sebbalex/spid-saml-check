@@ -27,6 +27,9 @@ docker run -t -i -p 10443:10443 -e NODE_HTTPS_PORT=10443 italia/spid-saml-check
 
 # Executes a specific version disabling TLS and setting port 8080
 docker run -t -i -p 8080:8080 -e NODE_USE_HTTPS=false -e NODE_HTTPS_PORT=8080 italia/spid-saml-check
+
+# Executes a specific version using custom users json url
+docker run -t -i -p 8443:8443 -e SPID_USERS_URL=https://example.org/users.json italia/spid-saml-check
 ```
 
 The application spid-validator is immediately available at https://localhost:8443
