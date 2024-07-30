@@ -22,13 +22,16 @@ docker run -t -i -p 8443:8443 italia/spid-saml-check
 # Executes a specific version
 docker run -t -i -p 8443:8443 italia/spid-saml-check:v.1.8.2
 
-# Executes a specific version setting TLS port
+# Executes latest version setting TLS port
 docker run -t -i -p 10443:10443 -e NODE_HTTPS_PORT=10443 italia/spid-saml-check
 
-# Executes a specific version disabling TLS and setting port 8080
+# Executes latest version setting server host, which will be used as base host for all endpoint in metadata. Very useful in self-deploy condition.
+docker run -t -i -p 8443:8443 -e NODE_SERVER_HOST="https://localhost" italia/spid-saml-check
+
+# Executes latest version disabling TLS and setting port 8080
 docker run -t -i -p 8080:8080 -e NODE_USE_HTTPS=false -e NODE_HTTPS_PORT=8080 italia/spid-saml-check
 
-# Executes a specific version using custom users json url
+# Executes latest version using custom users json url
 docker run -t -i -p 8443:8443 -e SPID_USERS_URL=https://example.org/users.json italia/spid-saml-check
 ```
 

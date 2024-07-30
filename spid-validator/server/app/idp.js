@@ -9,6 +9,8 @@ const config_idp = require("../../config/idp.json");
 const config_dir = require("../../config/dir.json");
 
 const validator_basepath = config_idp.basepath=='/'? '':config_idp.basepath;
+const useHttps = (process.env.NODE_USE_HTTPS) ? /^true$/i.test(process.env.NODE_USE_HTTPS) : config_server.useHttps;
+const server_host = (process.env.NODE_SERVER_HOST) ? process.env.NODE_SERVER_HOST : config_server.host;
 
 module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutResponse) {
 
@@ -25,14 +27,21 @@ module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutRespo
             res.status(200).send();
         }
     });
+    // override IDP entityID, computing from server.json host
+    config_idp.entityID =
+    server_host +
+    (config_server.useProxy
+      ? ""
+      : useHttps
+      ? `:${config_server.s_port}`
+      : `:${config_server.port}`) +
+      validator_basepath;
 
     // get validator idp metadata
     app.get(validator_basepath + "/metadata.xml", function (req, res) {
         let config = config_idp;
 
-        let endpoint = config_server.host
-            + (config_server.useProxy? '' : ":" + config_server.port)
-            + validator_basepath + "/samlsso";
+        let endpoint = config_idp.entityID + "/samlsso";
 
         config.endpoints = {
             "login": endpoint,

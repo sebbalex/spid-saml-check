@@ -21,19 +21,29 @@ const config_spid_users = require("../../config/spid_users.json");
 //const demo_basepath = config_demo.basepath=='/'? '':config_demo.basepath;
 //const validator_basepath = config_idp.basepath=='/'? '':config_idp.basepath;
 const spid_users_url = process.env.SPID_USERS_URL;
+const useHttps = (process.env.NODE_USE_HTTPS) ? /^true$/i.test(process.env.NODE_USE_HTTPS) : config_server.useHttps;
+const server_host = (process.env.NODE_SERVER_HOST) ? process.env.NODE_SERVER_HOST : config_server.host;
 
 const demo_basepath = config_demo.basepath;
 const validator_basepath = config_idp.basepath;
 
 module.exports = async function(app, checkAuthorisation, getEntityDir, sendLogoutResponse, database) {
     const spid_users = spid_users_url ? await getUsersFromURL(spid_users_url) : config_spid_users;
+    // override IDP entityID, computing from server.json host
+    config_demo.entityID =
+    server_host +
+    (config_server.useProxy
+      ? ""
+      : useHttps
+      ? `:${config_server.s_port}`
+      : `:${config_server.port}`) +
+    demo_basepath;
+  
     // get validator demo metadata
     app.get(demo_basepath + "/metadata.xml", function (req, res) {
         let config = config_demo;
 
-        let endpoint = config_server.host
-            + (config_server.useProxy? '' : ":" + config_server.port)
-            + demo_basepath + "/samlsso";
+        let endpoint = config_demo.entityID + "/samlsso";
 
         config.endpoints = {
             "login": endpoint,
