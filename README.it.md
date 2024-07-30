@@ -22,8 +22,11 @@ docker run -t -i -p 8443:8443 italia/spid-saml-check
 # Esecuzione di una specifica versione
 docker run -t -i -p 8443:8443 italia/spid-saml-check:v.1.8.1
 
-# Esecuzione dell'ultima versione specificando il server host, che verrà utilizzato come base host per tutti gli endpoint nei metadata. Molto utili in condizioni di self-deploy.
+# Esecuzione dell'ultima versione specificando il server host, che verrà utilizzato come base host per tutti gli endpoint nei metadata. Molto utile in condizioni di self-deploy.
 docker run -t -i -p 8443:8443 -e NODE_SERVER_HOST="https://localhost" italia/spid-saml-check
+
+# Esecuzione dell'ultima versione specificando se l'applicazione è dietro un gateway o proxy. Molto utile in condizioni di self-deploy.
+docker run -t -i -p 8443:8443 -e NODE_USE_PROXY="true" italia/spid-saml-check
 
 # Esecuzione dell'ultima versione specificando la porta TLS
 docker run -t -i -p 10443:10443 -e NODE_HTTPS_PORT=10443 italia/spid-saml-check

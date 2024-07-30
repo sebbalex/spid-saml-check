@@ -11,6 +11,7 @@ const config_dir = require("../../config/dir.json");
 const validator_basepath = config_idp.basepath=='/'? '':config_idp.basepath;
 const useHttps = (process.env.NODE_USE_HTTPS) ? /^true$/i.test(process.env.NODE_USE_HTTPS) : config_server.useHttps;
 const server_host = (process.env.NODE_SERVER_HOST) ? process.env.NODE_SERVER_HOST : config_server.host;
+const useProxy = (process.env.NODE_USE_PROXY) ?  /^true$/i.test(process.env.NODE_USE_PROXY) : config_server.useProxy;
 
 module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutResponse) {
 
@@ -30,7 +31,7 @@ module.exports = function(app, checkAuthorisation, getEntityDir, sendLogoutRespo
     // override IDP entityID, computing from server.json host
     config_idp.entityID =
     server_host +
-    (config_server.useProxy
+    (useProxy
       ? ""
       : useHttps
       ? `:${config_server.s_port}`

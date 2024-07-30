@@ -23,6 +23,7 @@ const config_spid_users = require("../../config/spid_users.json");
 const spid_users_url = process.env.SPID_USERS_URL;
 const useHttps = (process.env.NODE_USE_HTTPS) ? /^true$/i.test(process.env.NODE_USE_HTTPS) : config_server.useHttps;
 const server_host = (process.env.NODE_SERVER_HOST) ? process.env.NODE_SERVER_HOST : config_server.host;
+const useProxy = (process.env.NODE_USE_PROXY) ?  /^true$/i.test(process.env.NODE_USE_PROXY) : config_server.useProxy;
 
 const demo_basepath = config_demo.basepath;
 const validator_basepath = config_idp.basepath;
@@ -32,7 +33,7 @@ module.exports = async function(app, checkAuthorisation, getEntityDir, sendLogou
     // override IDP entityID, computing from server.json host
     config_demo.entityID =
     server_host +
-    (config_server.useProxy
+    (useProxy
       ? ""
       : useHttps
       ? `:${config_server.s_port}`
