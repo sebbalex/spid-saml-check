@@ -189,3 +189,24 @@ Test users of spid-demo that can be used are listed at: [https://localhost:8443/
 - Send an authn request to spid-demo in order to use Demo environment
 
   <img src="doc/img/demo_idp.png" width="500" alt="demo idp" />
+
+## Update local certificates
+```bash
+$ mkdir certs && cd certs
+```
+
+```bash
+$ docker run -it --rm -v ./:/certs:rw italia/spid-compliant-certificates:latest generator \
+--key-size 2048 \
+--common-name localhost:8080 \
+--days 3650 \
+--entity-id https://localhost:8080 \
+--locality-name Rome \
+--org-id PA:IT-agid \
+--org-name "AgID" \
+--sector public \
+--md-alg sha256 \
+--sector public
+```
+Move and rename accordingly in `spid-validator/config/` folder.
+make sure to update also the files `spid-validator/config/idp_demo.json` and `spid-validator/config/idp.json` line 7 and 8.
